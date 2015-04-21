@@ -4,22 +4,23 @@
 SYSTEM_MODE(MANUAL);
 
 const uint8_t R200[] =
-	"HTTP/1.0 200 OK\r\n"									\
-	"Server: spark-core/1.0\r\n"							\
-	"Content-Type: text/html\r\n"							\
+	"HTTP/1.0 200 OK\r\n"										\
+	"Server: spark-core/1.0\r\n"						\
+	"Content-Type: text/html\r\n"						\
 	"Connection: close\r\n"									\
-	"\r\n"													\
+	"\r\n"																	\
 	"<html><pre>OK<br />[%s]</pre></html>";
 
 const uint8_t R404[] =
-	"HTTP/1.0 404 Not Found\r\n"							\
-	"Server: spark-core/1.0\r\n"							\
-	"Content-Type: text/html\r\n"							\
+	"HTTP/1.0 404 Not Found\r\n"						\
+	"Server: spark-core/1.0\r\n"						\
+	"Content-Type: text/html\r\n"						\
 	"Connection: close\r\n"									\
 	"\r\n";
 
 const uint8_t cmd1[] = "GET / HTTP/1.1\r\n";
 const uint8_t cmd2[] = "GET /value1 HTTP/1.1\r\n";
+const uint8_t cmd3[] = "POST /reset HTTP/1.1\r\n";
 
 TCPServer server = TCPServer(12345);
 TCPClient client;
@@ -31,7 +32,7 @@ uint8_t ibuf[BUFSIZE], obuf[BUFSIZE];
 
 void setup() {
 	Serial.begin(115200);
-	while (!Serial.available());
+//	while (!Serial.available());
 
 	WiFi.connect();
 	while (!WiFi.ready());
@@ -65,6 +66,8 @@ void loop() {
 				sprintf((char *)obuf, (const char *)R200, (const char *)ibuf);
 			else if (strncmp((const char *)ibuf, (const char *)cmd2, sizeof(cmd2) - 1) == 0)
 				sprintf((char *)obuf, (const char *)R200, "Some value...");
+			else if (strncmp((const char *)ibuf, (const char *)cmd3, sizeof(cmd3) - 1) == 0)
+				NVIC_SystemReset();
 			else
 				sprintf((char *)obuf, (const char *)R404);
 
